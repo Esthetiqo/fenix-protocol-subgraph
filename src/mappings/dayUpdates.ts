@@ -1,10 +1,9 @@
 /* eslint-disable prefer-const */
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
-import { Bundle, DayData, Factory, Mint, Pair, PairDayData, Token, TokenDayData } from '../types/schema'
-import { PairHourData } from './../types/schema'
+import { Bundle, DayData, Factory, Pair, PairDayData, Token, TokenDayData } from '../../generated/schema'
+import { Mint as MintEvent } from "../../generated/templates/Pair/Pair"
+import { PairHourData } from '../../generated/schema'
 import { FACTORY_ADDRESS, ONE_BI, ZERO_BD, ZERO_BI } from './helpers'
-
-
 
 export function updateDayData(timestamp: number): DayData {
   let pairFactory = Factory.load(FACTORY_ADDRESS)
@@ -34,7 +33,7 @@ export function updateDayData(timestamp: number): DayData {
   return dayData as DayData
 }
 
-export function updatePairDayData(event: Mint): PairDayData {
+export function updatePairDayData(event: MintEvent): PairDayData {
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400

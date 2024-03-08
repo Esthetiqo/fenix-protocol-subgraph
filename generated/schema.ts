@@ -2610,6 +2610,24 @@ export class LiquidityPositionSnapshotLoader extends Entity {
   }
 }
 
+export class BigIntLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BigInt[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BigInt[]>(value);
+  }
+}
+
 export class MintLoader extends Entity {
   _entity: string;
   _field: string;
