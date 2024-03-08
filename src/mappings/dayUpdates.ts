@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { BigDecimal, BigInt, EthereumEvent } from '@graphprotocol/graph-ts'
-import { Bundle, Pair, PairDayData, Token, TokenDayData, DayData, Factory } from '../types/schema'
-import { PairHourData } from './../types/schema'
+import { Bundle, DayData, Factory, Pair, PairDayData, Token, TokenDayData } from '../../generated/schema'
+import { PairHourData } from './../../generated/schema'
 import { FACTORY_ADDRESS, ONE_BI, ZERO_BD, ZERO_BI } from './helpers'
 
 export function updateDayData(event: EthereumEvent): DayData {

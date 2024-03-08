@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
-import { Pair, Token, Bundle } from '../types/schema'
-import { BigDecimal, Address, BigInt } from '@graphprotocol/graph-ts/index'
-import { ZERO_BD, factoryContract, ADDRESS_ZERO, ONE_BD, UNTRACKED_PAIRS } from './helpers'
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts/index'
+import { Bundle, Pair, Token } from '../../generated/schema'
+import { ADDRESS_ZERO, ONE_BD, UNTRACKED_PAIRS, ZERO_BD, factoryContract } from './helpers'
 
 const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'
 const USDC_WETH_PAIR = '0x79c912fef520be002c2b6e57ec4324e260f38e50' // created 10008355

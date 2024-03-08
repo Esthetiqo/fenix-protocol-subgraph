@@ -1,29 +1,29 @@
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal, store, Address } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, store } from '@graphprotocol/graph-ts'
 import {
-  Pair,
-  Token,
-  Factory,
-  Transaction,
-  Mint as MintEvent,
-  Burn as BurnEvent,
-  Swap as SwapEvent,
-  Bundle
-} from '../types/schema'
-import { Pair as PairContract, Mint, Burn, Swap, Transfer, Sync } from '../types/templates/Pair/Pair'
-import { updatePairDayData, updateTokenDayData, updateDayData, updatePairHourData } from './dayUpdates'
-import { getEthPriceInUSD, findEthPerToken, getTrackedVolumeUSD, getTrackedLiquidityUSD } from './pricing'
+    Bundle,
+    Burn as BurnEvent,
+    Factory,
+    Mint as MintEvent,
+    Pair,
+    Swap as SwapEvent,
+    Token,
+    Transaction
+} from '../../generated/schema'
+import { Burn, Mint, Pair as PairContract, Swap, Sync, Transfer } from '../../generated/templates/Pair/Pair'
+import { updateDayData, updatePairDayData, updatePairHourData, updateTokenDayData } from './dayUpdates'
 import {
-  convertTokenToDecimal,
-  ADDRESS_ZERO,
-  FACTORY_ADDRESS,
-  ONE_BI,
-  createUser,
-  createLiquidityPosition,
-  ZERO_BD,
-  BI_18,
-  createLiquiditySnapshot
+    ADDRESS_ZERO,
+    BI_18,
+    FACTORY_ADDRESS,
+    ONE_BI,
+    ZERO_BD,
+    convertTokenToDecimal,
+    createLiquidityPosition,
+    createLiquiditySnapshot,
+    createUser
 } from './helpers'
+import { findEthPerToken, getEthPriceInUSD, getTrackedLiquidityUSD, getTrackedVolumeUSD } from './pricing'
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId).sender !== null // sufficient checks
