@@ -1,32 +1,32 @@
 /* eslint-disable prefer-const */
 import { Address, BigDecimal, BigInt, store } from '@graphprotocol/graph-ts'
 import {
-    Bundle,
-    Burn as BurnEvent,
-    Factory,
-    Mint as MintEvent,
-    Pair,
-    Swap as SwapEvent,
-    Token,
-    Transaction
-} from '../../generated/schema'
-import { Burn, Mint, Pair as PairContract, Swap, Sync, Transfer } from '../../generated/templates/Pair/Pair'
+  Bundle,
+  Burn as BurnEvent,
+  Factory,
+  Mint as MintEvent,
+  Pair,
+  Swap as SwapEvent,
+  Token,
+  Transaction
+} from '../types/schema'
+import { Burn, Mint, Pair as PairContract, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
 import { updateDayData, updatePairDayData, updatePairHourData, updateTokenDayData } from './dayUpdates'
 import {
-    ADDRESS_ZERO,
-    BI_18,
-    FACTORY_ADDRESS,
-    ONE_BI,
-    ZERO_BD,
-    convertTokenToDecimal,
-    createLiquidityPosition,
-    createLiquiditySnapshot,
-    createUser
+  ADDRESS_ZERO,
+  BI_18,
+  FACTORY_ADDRESS,
+  ONE_BI,
+  ZERO_BD,
+  convertTokenToDecimal,
+  createLiquidityPosition,
+  createLiquiditySnapshot,
+  createUser
 } from './helpers'
 import { findEthPerToken, getEthPriceInUSD, getTrackedLiquidityUSD, getTrackedVolumeUSD } from './pricing'
 
 function isCompleteMint(mintId: string): boolean {
-  return MintEvent.load(mintId).sender !== null // sufficient checks
+  return MintEvent.load(mintId)?.sender !== null // sufficient checks
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -46,6 +46,11 @@ export function handleTransfer(event: Transfer): void {
 
   // get pair and load contract
   let pair = Pair.load(event.address.toHexString())
+
+  if (!pair) {
+    throw new Error('Pair does not exist')
+  }
+
   let pairContract = PairContract.bind(event.address)
 
   // liquidity token amount being transfered
@@ -57,9 +62,6 @@ export function handleTransfer(event: Transfer): void {
     transaction = new Transaction(transactionHash)
     transaction.blockNumber = event.block.number
     transaction.timestamp = event.block.timestamp
-    transaction.mints = []
-    transaction.burns = []
-    transaction.swaps = []
   }
 
   // mints

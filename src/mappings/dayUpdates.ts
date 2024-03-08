@@ -1,12 +1,18 @@
 /* eslint-disable prefer-const */
-import { BigDecimal, BigInt, EthereumEvent } from '@graphprotocol/graph-ts'
-import { Bundle, DayData, Factory, Pair, PairDayData, Token, TokenDayData } from '../../generated/schema'
-import { PairHourData } from './../../generated/schema'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { Bundle, DayData, Factory, Mint, Pair, PairDayData, Token, TokenDayData } from '../types/schema'
+import { PairHourData } from './../types/schema'
 import { FACTORY_ADDRESS, ONE_BI, ZERO_BD, ZERO_BI } from './helpers'
 
-export function updateDayData(event: EthereumEvent): DayData {
-  let uniswap = Factory.load(FACTORY_ADDRESS)
-  let timestamp = event.block.timestamp.toI32()
+
+
+export function updateDayData(timestamp: number): DayData {
+  let pairFactory = Factory.load(FACTORY_ADDRESS)
+
+  if (!pairFactory) {
+    throw new Error('Factory must be defined')
+  }
+
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
   let dayData = DayData.load(dayID.toString())
@@ -20,15 +26,15 @@ export function updateDayData(event: EthereumEvent): DayData {
     dayData.dailyVolumeUntracked = ZERO_BD
   }
 
-  dayData.totalLiquidityUSD = uniswap.totalLiquidityUSD
-  dayData.totalLiquidityETH = uniswap.totalLiquidityETH
-  dayData.txCount = uniswap.txCount
+  dayData.totalLiquidityUSD = pairFactory.totalLiquidityUSD
+  dayData.totalLiquidityETH = pairFactory.totalLiquidityETH
+  dayData.txCount = pairFactory.txCount
   dayData.save()
 
   return dayData as DayData
 }
 
-export function updatePairDayData(event: EthereumEvent): PairDayData {
+export function updatePairDayData(event: Mint): PairDayData {
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
@@ -69,6 +75,11 @@ export function updatePairHourData(event: EthereumEvent): PairHourData {
     .concat('-')
     .concat(BigInt.fromI32(hourIndex).toString())
   let pair = Pair.load(event.address.toHexString())
+
+  if (!pair) {
+    throw new Error('Pair must be defined')
+  }
+
   let pairHourData = PairHourData.load(hourPairID)
   if (pairHourData === null) {
     pairHourData = new PairHourData(hourPairID)
@@ -105,17 +116,23 @@ export function updateTokenDayData(token: Token, event: EthereumEvent): TokenDay
     tokenDayData = new TokenDayData(tokenDayID)
     tokenDayData.date = dayStartTimestamp
     tokenDayData.token = token.id
-    tokenDayData.priceUSD = token.derivedETH.times(bundle.ethPrice)
+    if (token.derivedETH && bundle) {
+      tokenDayData.priceUSD = token.derivedETH.times(bundle.ethPrice)
+    }
     tokenDayData.dailyVolumeToken = ZERO_BD
     tokenDayData.dailyVolumeETH = ZERO_BD
     tokenDayData.dailyVolumeUSD = ZERO_BD
     tokenDayData.dailyTxns = ZERO_BI
     tokenDayData.totalLiquidityUSD = ZERO_BD
   }
-  tokenDayData.priceUSD = token.derivedETH.times(bundle.ethPrice)
+  if (token.derivedETH && bundle) {
+    tokenDayData.priceUSD = token.derivedETH.times(bundle.ethPrice)
+  }
   tokenDayData.totalLiquidityToken = token.totalLiquidity
   tokenDayData.totalLiquidityETH = token.totalLiquidity.times(token.derivedETH as BigDecimal)
-  tokenDayData.totalLiquidityUSD = tokenDayData.totalLiquidityETH.times(bundle.ethPrice)
+  if (token.derivedETH && bundle) {
+    tokenDayData.totalLiquidityUSD = tokenDayData.totalLiquidityETH.times(bundle.ethPrice)
+  }
   tokenDayData.dailyTxns = tokenDayData.dailyTxns.plus(ONE_BI)
   tokenDayData.save()
 

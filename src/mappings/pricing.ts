@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts/index'
-import { Bundle, Pair, Token } from '../../generated/schema'
+import { Bundle, Pair, Token } from '../types/schema'
 import { ADDRESS_ZERO, ONE_BD, UNTRACKED_PAIRS, ZERO_BD, factoryContract } from './helpers'
 
 const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'

@@ -220,19 +220,6 @@ export class Token extends Entity {
     this.set("decimals", Value.fromBigInt(value));
   }
 
-  get totalSupply(): BigInt {
-    let value = this.get("totalSupply");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set totalSupply(value: BigInt) {
-    this.set("totalSupply", Value.fromBigInt(value));
-  }
-
   get tradeVolume(): BigDecimal {
     let value = this.get("tradeVolume");
     if (!value || value.kind == ValueKind.NULL) {
